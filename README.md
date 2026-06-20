@@ -30,7 +30,7 @@ Ikuti langkah-langkah di bawah ini untuk menjalankan *server* di komputer lokal 
 ### 1. Kloning Repositori
 Buka terminal/CMD, lalu kloning repositori ini dan masuk ke dalam foldernya:
 ```bash
-git clone <url-repository-github-anda>
+git clone git@github.com:justdotzy69/Projek_Pemweb_Kel4.git
 cd Projek_Pemweb_Kel4
 ```
 
