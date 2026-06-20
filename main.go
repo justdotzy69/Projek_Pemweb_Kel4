@@ -4,7 +4,8 @@ import (
 	"log"
 	"os"
 
-	"Projek_Pemweb_Kel4/database" // Memanggil package database lokal kita
+	"Projek_Pemweb_Kel4/database"
+	"Projek_Pemweb_Kel4/routes" // Tambahkan import package routes kita
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -24,6 +25,7 @@ func main() {
 	app := fiber.New()
 
 	// 4. Buat satu route sederhana untuk pengetesan awal
+	routes.SetupRoutes(app)
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
 			"status":  "success",
