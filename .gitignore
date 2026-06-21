@@ -1,0 +1,30 @@
+File Environment / Rahasia (SANGAT PENTING!)
+
+.env
+
+Hasil build / file eksekusi Golang
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+main
+projek_pemweb_kel4
+
+Folder dependensi lokal (opsional di Go, tapi baik untuk dimasukkan)
+
+vendor/
+
+Konfigurasi IDE / Code Editor
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+File sistem operasi
+
+.DS_Store
+Thumbs.db

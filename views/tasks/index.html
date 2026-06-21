@@ -1,0 +1,82 @@
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Papan Quest</h1>
+    <p class="page-sub">Selesaikan quest untuk mendapatkan XP dan naik level.</p>
+  </div>
+  <button class="btn btn-primary" id="open-add-task">+ Catat Quest Baru</button>
+</div>
+
+<div class="filter-row" id="category-filters">
+  <span class="empty-note">Memuat kategori...</span>
+</div>
+
+<div class="quest-list" id="quest-list">
+  <div class="center-loading">Memuat papan quest...</div>
+</div>
+
+<!-- Modal: Tambah Quest -->
+<div class="modal-overlay" id="task-modal" hidden>
+  <div class="modal-card">
+    <h2>Catat Quest Baru</h2>
+    <form id="task-form">
+      <label>Judul Quest *
+        <input type="text" id="task-title" placeholder="Apa yang perlu diselesaikan?" required/>
+      </label>
+      <label>Deskripsi
+        <textarea id="task-desc" placeholder="Detail tambahan (opsional)..."></textarea>
+      </label>
+      <div class="form-row">
+        <label>Tingkat Kesulitan *
+          <select id="task-difficulty" required>
+            <option value="">Pilih...</option>
+            <option value="easy">Easy (+10 XP)</option>
+            <option value="medium">Medium (+20 XP)</option>
+            <option value="hard">Hard (+30 XP)</option>
+          </select>
+        </label>
+        <label>Kategori
+          <select id="task-category">
+            <option value="">Tanpa kategori</option>
+          </select>
+        </label>
+      </div>
+      <label>Deadline
+        <input type="date" id="task-deadline"/>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancel-task">Batal</button>
+        <button type="submit" class="btn btn-primary">Simpan Quest</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Tambah Kategori -->
+<div class="modal-overlay" id="category-modal" hidden>
+  <div class="modal-card">
+    <h2>Tambah Kategori</h2>
+    <form id="category-form">
+      <label>Nama Kategori *
+        <input type="text" id="category-name" placeholder="cth: Kuliah, Pribadi, Kerja..." required/>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="cancel-category">Batal</button>
+        <button type="submit" class="btn btn-primary">Tambah</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Level Up -->
+<div class="modal-overlay" id="levelup-modal" hidden>
+  <div class="modal-card levelup-card">
+    <div class="level-hex level-hex-lg" id="levelup-number">
+      <span>!</span>
+    </div>
+    <h2>LEVEL UP!</h2>
+    <p id="levelup-text"></p>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn btn-primary" id="levelup-close">Keren! 🎉</button>
+    </div>
+  </div>
+</div>
