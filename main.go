@@ -44,7 +44,7 @@ func main() {
 	routes.SetupRoutes(app)
 
 	// 6. Route web frontend (ditambahkan di web_routes.go)
-	setupWebRoutes(app)
+	// setupWebRoutes(app)
 
 	// 7. Port
 	port := os.Getenv("PORT")

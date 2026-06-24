@@ -81,6 +81,11 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+function toRFC3339(dateStr) {
+  if (!dateStr) return null;
+  return new Date(dateStr + 'T00:00:00').toISOString();
+}
+
 /* ── hud.js ─────────────────────────────────────────────── */
 
 async function initHud(activePage) {
@@ -413,7 +418,7 @@ function bindModalControls() {
       title:       document.getElementById('task-title').value.trim(),
       description: document.getElementById('task-desc').value.trim(),
       difficulty:  document.getElementById('task-difficulty').value,
-      deadline:    document.getElementById('task-deadline').value || null,
+      deadline: toRFC3339(document.getElementById('task-deadline').value),
     };
     const catId = document.getElementById('task-category').value;
     if (catId) payload.category_id = Number(catId);
