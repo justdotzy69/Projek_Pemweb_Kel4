@@ -81,6 +81,8 @@ function escapeHtml(str) {
   return div.innerHTML;
 }
 
+// Konversi "YYYY-MM-DD" dari <input type="date"> ke format RFC3339
+// yang bisa dibaca Go. Pakai T00:00:00 biar tidak geser akibat timezone.
 function toRFC3339(dateStr) {
   if (!dateStr) return null;
   return new Date(dateStr + 'T00:00:00').toISOString();
@@ -418,7 +420,7 @@ function bindModalControls() {
       title:       document.getElementById('task-title').value.trim(),
       description: document.getElementById('task-desc').value.trim(),
       difficulty:  document.getElementById('task-difficulty').value,
-      deadline: toRFC3339(document.getElementById('task-deadline').value),
+      deadline:    toRFC3339(document.getElementById('task-deadline').value),
     };
     const catId = document.getElementById('task-category').value;
     if (catId) payload.category_id = Number(catId);

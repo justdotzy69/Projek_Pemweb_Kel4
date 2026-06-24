@@ -13,17 +13,19 @@ import (
 )
 
 func main() {
-	// 1. Load .env
+	// Load konfigurasi dari file .env
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Peringatan: File .env tidak ditemukan, menggunakan nilai default.")
 	}
 
-	// 2. Koneksi database
+	// Koneksi ke database MySQL dan jalankan auto-migrate
 	database.ConnectDB()
 
-	// 3. Setup template engine untuk halaman web
+	// Setup template engine: folder views/, ekstensi .html
 	engine := html.New("./views", ".html")
+
+	// Fungsi tambahan yang bisa dipanggil dari dalam template HTML
 	engine.AddFunc("add", func(a, b int) int { return a + b })
 	engine.AddFunc("xpOf", func(diff string) int {
 		switch diff {
@@ -33,25 +35,24 @@ func main() {
 		}
 		return 0
 	})
+
+	// Aktifkan reload otomatis template saat development
 	engine.Reload(true)
 
-	// 4. Inisialisasi Fiber dengan template engine
+	// Inisialisasi Fiber dengan template engine di atas
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 
-	// 5. Route API backend (tidak diubah sama sekali)
+	// Daftarkan semua route (web + API) ke app
 	routes.SetupRoutes(app)
 
-	// 6. Route web frontend (ditambahkan di web_routes.go)
-	// setupWebRoutes(app)
-
-	// 7. Port
+	// Baca port dari .env, default ke 3000 kalau tidak ada
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "3000"
 	}
 
-	log.Printf("🚀 Server berjalan di http://localhost:%s", port)
+	log.Printf("Server berjalan di http://localhost:%s", port)
 	log.Fatal(app.Listen(":" + port))
 }

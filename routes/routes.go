@@ -9,40 +9,45 @@ import (
 
 func SetupRoutes(app *fiber.App) {
 
-	// ─── Static files ─────────────────────────────────────────────────────────
+	// ── Static files ──────────────────────────────────────────────────────────
+	// Folder static/ bisa diakses browser di URL /static/
 	app.Static("/static", "./static")
 
-	// ─── Web routes (HTML pages) ──────────────────────────────────────────────
+	// ── Halaman web (return HTML) ─────────────────────────────────────────────
+
+	// Root redirect ke halaman login
 	app.Get("/", func(c *fiber.Ctx) error { return c.Redirect("/login") })
 
-	// Auth pages (redirect ke /dashboard kalau sudah login)
-	app.Get("/login", middlewares.RedirectIfAuth, controllers.LoginPage)
-	app.Post("/login", controllers.LoginSubmit)
+	// Halaman auth — kalau sudah login langsung redirect ke /dashboard
+	app.Get("/login",    middlewares.RedirectIfAuth, controllers.LoginPage)
+	app.Post("/login",   controllers.LoginSubmit)
 	app.Get("/register", middlewares.RedirectIfAuth, controllers.RegisterPage)
 	app.Post("/register", controllers.RegisterSubmit)
-	app.Get("/logout", controllers.Logout)
+	app.Get("/logout",   controllers.Logout)
 
-	// Protected pages
+	// Halaman utama — wajib login (dicek via cookie)
 	app.Get("/dashboard", middlewares.RequireAuth, controllers.DashboardPage)
-	app.Get("/tasks", middlewares.RequireAuth, controllers.TaskPage)
-	app.Get("/badges", middlewares.RequireAuth, controllers.BadgePage)
+	app.Get("/tasks",     middlewares.RequireAuth, controllers.TaskPage)
+	app.Get("/badges",    middlewares.RequireAuth, controllers.BadgePage)
 
-	// ─── API routes ───────────────────────────────────────────────────────────
+	// ── API (return JSON) ─────────────────────────────────────────────────────
 	api := app.Group("/api")
 
+	// Auth — tidak butuh token
 	auth := api.Group("/auth")
 	auth.Post("/register", controllers.Register)
-	auth.Post("/login", controllers.Login)
+	auth.Post("/login",    controllers.Login)
 
+	// Semua route di bawah ini butuh header: Authorization: Bearer <token>
 	api.Get("/dashboard", middlewares.Protected(), controllers.GetDashboard)
 
 	api.Post("/categories", middlewares.Protected(), controllers.CreateCategory)
-	api.Get("/categories", middlewares.Protected(), controllers.GetCategories)
+	api.Get("/categories",  middlewares.Protected(), controllers.GetCategories)
 
 	api.Post("/badges", middlewares.Protected(), controllers.CreateBadge)
-	api.Get("/badges", middlewares.Protected(), controllers.GetBadges)
+	api.Get("/badges",  middlewares.Protected(), controllers.GetBadges)
 
-	api.Post("/tasks", middlewares.Protected(), controllers.CreateTask)
-	api.Get("/tasks", middlewares.Protected(), controllers.GetTasks)
-	api.Put("/tasks/:id/complete", middlewares.Protected(), controllers.CompleteTask)
+	api.Post("/tasks",                middlewares.Protected(), controllers.CreateTask)
+	api.Get("/tasks",                 middlewares.Protected(), controllers.GetTasks)
+	api.Put("/tasks/:id/complete",    middlewares.Protected(), controllers.CompleteTask)
 }

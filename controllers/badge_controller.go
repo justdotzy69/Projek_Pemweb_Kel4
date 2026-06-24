@@ -7,11 +7,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// CreateBadge untuk menambahkan master badge baru
+// CreateBadge membuat data master badge baru di sistem.
+// Badge ini nantinya bisa diperoleh user saat naik level.
+// Route: POST /api/badges
 func CreateBadge(c *fiber.Ctx) error {
 	var badge models.Badge
 
-	// 1. Baca input JSON dari client
 	if err := c.BodyParser(&badge); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  "error",
@@ -19,7 +20,6 @@ func CreateBadge(c *fiber.Ctx) error {
 		})
 	}
 
-	// 2. Validasi input sederhana
 	if badge.Name == "" || badge.ImageURL == "" || badge.RequiredLevel <= 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  "error",
@@ -27,12 +27,10 @@ func CreateBadge(c *fiber.Ctx) error {
 		})
 	}
 
-	// 3. Simpan ke database
-	result := database.DB.Create(&badge)
-	if result.Error != nil {
+	if err := database.DB.Create(&badge).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Gagal menyimpan badge (Mungkin nama sudah ada)",
+			"message": "Gagal menyimpan badge (mungkin nama sudah ada)",
 		})
 	}
 
@@ -43,10 +41,10 @@ func CreateBadge(c *fiber.Ctx) error {
 	})
 }
 
-// GetBadges untuk mengambil semua daftar badge yang tersedia
+// GetBadges mengambil semua badge yang tersedia di sistem.
+// Route: GET /api/badges
 func GetBadges(c *fiber.Ctx) error {
 	var badges []models.Badge
-
 	database.DB.Find(&badges)
 
 	return c.JSON(fiber.Map{

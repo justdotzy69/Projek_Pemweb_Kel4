@@ -7,16 +7,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// GetDashboard mengambil statistik user yang sedang login
+// GetDashboard mengambil data statistik user yang sedang login.
+// Password tidak ikut diambil karena pakai .Select() yang eksplisit.
+// Route: GET /api/dashboard
 func GetDashboard(c *fiber.Ctx) error {
-	// 1. Ambil user_id dari memori lokal yang diset oleh middleware
 	userID := c.Locals("user_id").(uint)
 
 	var user models.User
 
-	// 2. Cari data user di database, sekalian bawa data relasi Badges-nya
-	// Kita gunakan .Select untuk menyembunyikan password agar lebih aman
-	result := database.DB.Preload("Badges").Select("id, email, role, total_xp, current_level").First(&user, userID)
+	// Preload("Badges") = ikut ambil data badge yang dimiliki user
+	// Select() = hanya ambil kolom yang diperlukan, password tidak ikut
+	result := database.DB.
+		Preload("Badges").
+		Select("id, email, role, total_xp, current_level").
+		First(&user, userID)
 
 	if result.Error != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -25,7 +29,6 @@ func GetDashboard(c *fiber.Ctx) error {
 		})
 	}
 
-	// 3. Kembalikan data ke klien
 	return c.JSON(fiber.Map{
 		"status":  "success",
 		"message": "Data dashboard berhasil diambil",

@@ -2,7 +2,8 @@ package helpers
 
 import "math"
 
-// CalculateXP menentukan jumlah XP berdasarkan tingkat kesulitan tugas
+// CalculateXP mengembalikan jumlah XP berdasarkan tingkat kesulitan tugas.
+// Nilai ini juga harus sinkron dengan konstanta xpOf() di main.go dan app.js.
 func CalculateXP(difficulty string) int {
 	switch difficulty {
 	case "easy":
@@ -16,8 +17,11 @@ func CalculateXP(difficulty string) int {
 	}
 }
 
-// CalculateLevel menentukan level pengguna saat ini berdasarkan total XP
-// Asumsi: Setiap 100 XP akan naik 1 level. (0-99 = Lvl 1, 100-199 = Lvl 2, dst)
+// CalculateLevel menghitung level user dari total XP yang dimiliki.
+// Formula: setiap 100 XP = 1 level, mulai dari level 1.
+//   0–99 XP   → Level 1
+//   100–199   → Level 2
+//   200–299   → Level 3, dst.
 func CalculateLevel(totalXP int) int {
 	return int(math.Floor(float64(totalXP)/100)) + 1
 }

@@ -7,11 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// CreateCategory untuk menambahkan kategori baru
+// CreateCategory membuat kategori baru untuk mengelompokkan tugas.
+// Route: POST /api/categories
 func CreateCategory(c *fiber.Ctx) error {
 	var category models.Category
 
-	// 1. Baca input dari user (berupa JSON: {"name": "Kuliah"})
 	if err := c.BodyParser(&category); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  "error",
@@ -19,7 +19,6 @@ func CreateCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// 2. Validasi input
 	if category.Name == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status":  "error",
@@ -27,12 +26,10 @@ func CreateCategory(c *fiber.Ctx) error {
 		})
 	}
 
-	// 3. Simpan ke database
-	result := database.DB.Create(&category)
-	if result.Error != nil {
+	if err := database.DB.Create(&category).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  "error",
-			"message": "Gagal menyimpan kategori (Mungkin nama sudah ada)",
+			"message": "Gagal menyimpan kategori (mungkin nama sudah ada)",
 		})
 	}
 
@@ -43,11 +40,10 @@ func CreateCategory(c *fiber.Ctx) error {
 	})
 }
 
-// GetCategories untuk mengambil semua daftar kategori
+// GetCategories mengambil semua kategori yang tersedia.
+// Route: GET /api/categories
 func GetCategories(c *fiber.Ctx) error {
 	var categories []models.Category
-
-	// Cari semua data di tabel categories
 	database.DB.Find(&categories)
 
 	return c.JSON(fiber.Map{

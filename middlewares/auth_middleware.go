@@ -8,13 +8,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// Protected adalah middleware untuk memvalidasi JWT
+// Protected adalah middleware untuk route API (/api/*).
+// Cara kerja: baca header Authorization → validasi JWT → simpan user_id ke Locals.
 func Protected() fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// 1. Ambil token dari header Authorization
+		// 1. Ambil header Authorization
 		authHeader := c.Get("Authorization")
-
-		// Jika header kosong, tolak akses
 		if authHeader == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"status":  "error",
@@ -22,7 +21,7 @@ func Protected() fiber.Handler {
 			})
 		}
 
-		// 2. Pastikan formatnya adalah "Bearer <token>"
+		// 2. Format harus "Bearer <token>" — pisah jadi dua bagian
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -33,17 +32,16 @@ func Protected() fiber.Handler {
 
 		tokenString := parts[1]
 
-		// 3. Parse dan validasi keaslian token menggunakan JWT_SECRET
+		// 3. Parse dan verifikasi token menggunakan JWT_SECRET dari .env
 		secretKey := os.Getenv("JWT_SECRET")
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Pastikan algoritma enkripsinya sesuai
+			// Pastikan algoritma yang dipakai adalah HMAC (HS256)
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fiber.ErrUnauthorized
 			}
 			return []byte(secretKey), nil
 		})
 
-		// Jika error atau token palsu/kedaluwarsa
 		if err != nil || !token.Valid {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"status":  "error",
@@ -51,14 +49,11 @@ func Protected() fiber.Handler {
 			})
 		}
 
-		// 4. Ekstrak data (Klaim) dari dalam token
+		// 4. Simpan user_id ke c.Locals supaya bisa diakses controller
+		// Nilai dari JWT selalu float64, di-convert ke uint agar cocok dengan model
 		claims := token.Claims.(jwt.MapClaims)
-
-		// Simpan user_id ke Locals agar bisa diakses oleh Controller nanti
-		// Nilai dari JWT berbentuk float64, kita convert jadi uint agar cocok dengan model kita
 		c.Locals("user_id", uint(claims["user_id"].(float64)))
 
-		// 5. Lolos pemeriksaan, lanjut ke fungsi Controller
 		return c.Next()
 	}
 }
